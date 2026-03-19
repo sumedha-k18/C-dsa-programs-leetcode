@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+using namespace std;
+int f(int i, int target, vector<int>& coins, vector<vector<int>>& dp) {
+    // Base case
+    if (i == 0) {
+        if (target % coins[0] == 0)
+            return target / coins[0];
+        else
+            return 1e9;
+    }
+
+    // Memoization check
+    if (dp[i][target] != -1)
+        return dp[i][target];
+
+    // Not take
+    int notTake = f(i - 1, target, coins, dp);
+
+    // Take
+    int take = 1e9;
+    if (coins[i] <= target)
+        take = 1 + f(i, target - coins[i], coins, dp);
+
+    return dp[i][target] = min(take, notTake);
+}
+int coinChange(vector<int>& coins, int k) {
+    int n = coins.size();
+    vector<vector<int>> dp(n, vector<int>(k + 1, -1));
+
+    int ans = f(n - 1, k, coins, dp);
+
+    return (ans >= 1e9) ? -1 : ans;
+}
