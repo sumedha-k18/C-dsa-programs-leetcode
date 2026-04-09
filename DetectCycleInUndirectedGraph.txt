@@ -1,0 +1,61 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    /**
+     * Performs a Breadth-First Search to detect a cycle in a specific component.
+     *start  The starting node for this BFS traversal.
+     *adj    The adjacency list representing the graph.
+     *vis    The vector tracking visited nodes.
+     *return  True if a cycle is detected, false otherwise.
+     */
+    bool bfsCycle(int start, vector<int> adj[], vector<int>& vis) {
+        // Queue stores pairs of {current_node, parent_node}
+        queue<pair<int, int>> q;
+        
+        // Initialize the starting node
+        vis[start] = 1;
+        q.push({start, -1});
+
+        while (!q.empty()) {
+            int node = q.front().first;
+            int parent = q.front().second;
+            q.pop();
+
+            // Check all neighbors of the current node
+            for (auto nbr : adj[node]) {
+                // Case 1: Neighbor has not been visited yet
+                if (!vis[nbr]) {
+                    vis[nbr] = 1;
+                    q.push({nbr, node});
+                }
+                // Case 2: Neighbor is visited AND is not the parent
+                // This indicates we've found a different path to this node (a cycle).
+                else if (nbr != parent) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Main function to check if an undirected graph contains any cycles.
+     * Handles disconnected components by iterating through all vertices.
+     */
+    bool isCycle(int V, vector<int> adj[]) {
+        // vis array initialized to 0 (V+1 to handle 1-based indexing safely)
+        vector<int> vis(V + 1, 0);
+
+        for (int i = 1; i <= V; i++) {
+            // If the node hasn't been visited, it's the start of a new component
+            if (!vis[i]) {
+                if (bfsCycle(i, adj, vis)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};
